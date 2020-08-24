@@ -4,12 +4,17 @@ export function providerImage() {
 
 export function convertFileToImage(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-      resolve(e.target.result);
-    };
-
-    reader.readAsDataURL(file); // convert to base64 string
+    try {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        resolve(e.target.result);
+      };
+      reader.onerror = function (e) {
+        reject(e);
+      };
+      reader.readAsDataURL(file); // convert to base64 string
+    } catch (e) {
+      reject(e);
+    }
   });
 }

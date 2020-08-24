@@ -3,57 +3,47 @@ import { render, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Preview2 } from "../components/Preview2";
 
+const dummyFakeEvent = {
+  target: {
+    files: [
+      new File(["(⌐□_□)"], "chucknorris.png", { type: "image/png" }),
+    ],
+  },
+}
+
 afterEach(() => {
     cleanup()
   }) // Default on import: runs it after each test.
 
 describe(" Preview2 Tests ", () => {
-  //let component;
+  let component;
+  
+  afterEach(cleanup);
 
-  jest.mock("../previewImage", () => {
-    return {
-        convertFileToImage(){
-            return 1;
-        }
-    };
-  });
-
-  beforeAll(() => {
-    //   const { container, getByTestId } = render(<Preview2 />);
-    //   component = ;
-    //  console.log(component)
+  beforeEach(() => {
+    component = render(<Preview2 />);
   });
 
   test("Must have an image", () => {
-    const { container, getByTestId } = render(<Preview2 />);
-    // const image = container.querySelector("img");
-    //expect(image).toBeTruthy();
-    expect(getByTestId("imageFile")).toBeTruthy();
+    expect(component.getByTestId("imageFile")).toBeTruthy();
   });
 
   test(" Must have an input file ", () => {
-    const { container, getByTestId } = render(<Preview2 />);
-    //const input = component.container.querySelector("input");
-    expect(getByTestId("inputFile")).toBeTruthy();
+    expect(component.getByTestId("inputFile")).toBeTruthy();
   });
 
-  test.only(" Must distpatch a change event", async () => {
-    // const container = document.createElement("div");
-    const base = document.createElement("div");
-    document.body.appendChild(base);
-    const { getByTestId } = render(<Preview2 />, base);
-    const input = getByTestId("inputFile");
-    const image = getByTestId("imageFile");
+  test(" Must distpatch a change event", async () => {
+    const input = component.getByTestId("inputFile");
+    const image = component.getByTestId("imageFile");
     await act(async () => {
-     fireEvent.change(input, {
-        target: {
-          files: [
-            new File(["(⌐□_□)"], "chucknorris.png", { type: "image/png" }),
-          ],
-        },
-      });
-      
+      console.log('----');
     });
-    // expect(image).toHaveAttribute("src", "chucknorris.png");
+    await act(async ()=>{
+      fireEvent.change(input, dummyFakeEvent);
+    })
+    await waitFor(() => {
+      expect(image).toHaveAttribute("src", "chucknorris.png");
+    });
+    console.log('xxxx')
   });
 });
